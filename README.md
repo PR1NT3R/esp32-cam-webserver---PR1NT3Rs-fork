@@ -148,6 +148,7 @@ Contributions are welcome; please see the [Contribution guidelines](CONTRIBUTING
 ## Plans
 
 Time allowing; my Current plan is:
+
 V5 - mine
 * support for various sensors (at once or single at a time, idk) (uv, pressure, light, rain, ir, whatever makes an all in one sensor station)
 * fully wireless configuration and debugging, because soon the esp will sit in a spot that is difficult to reach, or will sit in an enclosure
