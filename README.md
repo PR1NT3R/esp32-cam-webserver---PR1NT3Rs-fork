@@ -148,8 +148,14 @@ Contributions are welcome; please see the [Contribution guidelines](CONTRIBUTING
 ## Plans
 
 Time allowing; my Current plan is:
+V5 - mine
+* support for various sensors (at once or single at a time, idk) (uv, pressure, light, rain, ir, whatever makes an all in one sensor station)
+* fully wireless configuration and debugging, because soon the esp will sit in a spot that is difficult to reach, or will sit in an enclosure
+* some kind of alert system to keep the esp32 alive for as long as possible (the overheating is really annoying)
+* power saving features, like dynamically lowered frame rate when not in use or something like that
+* simple movement/object detection that is tiny (I have no idea how to do it, so it will be a deep rabbit hole to go into)
 
-V4
+V4 - not mine, just the original creator’s plans
 * Investigate using SD card to capture images
 * Implement a better network stack for remembering multiple AP's, auto-config etc.
   * Advanced (web upload) OTA might be nice to have if possible
