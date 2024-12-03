@@ -38,6 +38,8 @@ https://wiki.ai-thinker.com/esp32-cam
 
 ## Troubleshooting:
 
+Cannot compile with the arduino ide? you need esp board from espressif at version 2.0.17, not the newest one (I tried to fix it to work with the newest version but it's too big of a headache for me).
+
 A lot of common issues with this sketch are discussed and covered in the discussion forums:
 
 https://github.com/easytarget/esp32-cam-webserver/discussions/categories/common-issues
@@ -110,6 +112,10 @@ If you have a status LED configured it will give a double flash when it begins a
 Go to the URL given in the serial output, the web UI should appear with the settings panel open. Click away!
 
 ## My Modifications:
+
+Custom MAC adress configuration (optional), added this because I have plans for this to be configured for my HA so it needs a stable ip adress in my DHCP config and for that I need a static MAC adress.
+<br /><br /><br />
+
 
 ![The simplified viewer](Docs/simpleviewer.png)<br>*The new default Simple view, just the basics*
 
