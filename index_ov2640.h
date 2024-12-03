@@ -625,7 +625,6 @@ const uint8_t index_ov2640_html[] = R"=====(<!doctype html>
         }, 30000);
       }
     }
-
   })
   </script>
 </html>)=====";

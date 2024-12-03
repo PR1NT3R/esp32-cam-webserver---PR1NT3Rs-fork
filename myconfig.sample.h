@@ -195,3 +195,18 @@ struct station stationList[] = {{"ssid1", "pass1", true},
 // For clone modules that have camera module and SPIFFS startup issues try setting
 // this very low (start at 2MHZ and increase):
 // #define XCLK_FREQ_MHZ 2
+
+
+
+
+/*
+ * custom mac adress section, made by PR1NT3R
+ * just uncomment the definition and set the mac below, mac will be automatic if not defined
+ */
+// #define CUSTOM_MAC
+
+#if defined(CUSTOM_MAC)
+    byte mac_custom[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+#else
+    byte mac_custom[6];
+#endif

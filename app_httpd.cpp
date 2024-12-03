@@ -28,6 +28,9 @@
 #include "src/logo.h"
 #include "storage.h"
 
+#include "driver/adc.h"
+#include "esp_adc_cal.h"
+
 // Functions from the main .ino
 extern void flashLED(int flashtime);
 extern void setLamp(int newVal);
@@ -220,6 +223,21 @@ static esp_err_t capture_handler(httpd_req_t *req){
     }
     return res;
 }
+
+// float getTemperatureReading() {
+//     // Configure ADC for the temperature sensor
+//     adc1_config_width(ADC_WIDTH_BIT_12);  // 12-bit resolution
+//     adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN_DB_0);  // ADC1_CHANNEL_0 is used for internal temperature sensor
+
+//     // Read the raw ADC value
+//     int raw_adc = adc1_get_raw(ADC1_CHANNEL_0);
+    
+//     // Convert the ADC reading to temperature in Celsius
+//     // Refer to the ESP32 datasheet for calibration and conversion specifics
+//     float temperatureC = ((raw_adc * 3.3 / 4095.0) - 0.5) * 100;  // Example conversion, adjust as necessary
+
+//     return temperatureC;
+// }
 
 static esp_err_t stream_handler(httpd_req_t *req){
     camera_fb_t * fb = NULL;
@@ -477,6 +495,7 @@ static esp_err_t status_handler(httpd_req_t *req){
         p+=sprintf(p, "\"code_ver\":\"%s\",", myVer);
         p+=sprintf(p, "\"rotate\":\"%d\",", myRotation);
         p+=sprintf(p, "\"stream_url\":\"%s\"", streamURL);
+        // p+=sprintf(p, "\"temperature\":\"%s\"", getTemperatureReading());
     }
     *p++ = '}';
     *p++ = 0;
@@ -630,6 +649,9 @@ static esp_err_t dump_handler(httpd_req_t *req){
     httpd_resp_set_hdr(req, "Content-Encoding", "identity");
     return httpd_resp_send(req, dumpOut, strlen(dumpOut));
 }
+
+// static esp_err_t temperature_handler(httpd_req_t *req){
+// }
 
 static esp_err_t stop_handler(httpd_req_t *req){
     flashLED(75);
@@ -843,6 +865,12 @@ void startCameraServer(int hPort, int sPort){
         .handler   = error_handler,
         .user_ctx  = NULL
     };
+    // httpd_uri_t temperature_uri = {
+    //     .uri      = "/temperature",
+    //     .method   = HTTP_GET,
+    //     .handler  = temperature_handler,
+    //     .user_ctx = NULL
+    // };
 
     // Request Handlers; config.max_uri_handlers (above) must be >= the number of handlers
     config.server_port = hPort;
@@ -864,6 +892,7 @@ void startCameraServer(int hPort, int sPort){
         httpd_register_uri_handler(camera_httpd, &logo_svg_uri);
         httpd_register_uri_handler(camera_httpd, &dump_uri);
         httpd_register_uri_handler(camera_httpd, &stop_uri);
+        // httpd_register_uri_handler(camera_httpd, &tempdump);
     }
 
     config.server_port = sPort;

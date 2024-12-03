@@ -109,10 +109,6 @@ Go to the URL given in the serial output, the web UI should appear with the sett
 
 ## My Modifications:
 
-Custom MAC adress configuration (optional), added this because I have plans for this to be configured for my HA so it needs a stable ip adress in my DHCP config and for that I need a static MAC adress.
-<br /><br /><br />
-
-
 ![The simplified viewer](Docs/simpleviewer.png)<br>*The new default Simple view, just the basics*
 
 The WiFi details can be stored in an (optional) header file to allow easier code development, and a camera name for the UI title can be configured. The lamp and status LED's are optional, and the lamp uses a exponential scale for brightness so that the control has some finess.
@@ -151,14 +147,7 @@ Contributions are welcome; please see the [Contribution guidelines](CONTRIBUTING
 
 Time allowing; my Current plan is:
 
-V5 - mine
-* support for sensors
-* fully wireless configuration and debugging, because soon the esp will sit in a spot that is difficult to reach, or will sit in an enclosure
-* some kind of alert system to keep the esp32 alive for as long as possible (the overheating is really annoying)
-* power saving features, like dynamically lowered frame rate when not in use or something like that
-* simple movement/object detection that is tiny (I have no idea how to do it, so it will be a deep rabbit hole to go into)
-
-V4 - not mine, just the original creator's plans
+V4
 * Investigate using SD card to capture images
 * Implement a better network stack for remembering multiple AP's, auto-config etc.
   * Advanced (web upload) OTA might be nice to have if possible

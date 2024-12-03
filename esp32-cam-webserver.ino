@@ -1,6 +1,7 @@
 #include <esp_camera.h>
 #include <esp_int_wdt.h>
 #include <esp_task_wdt.h>
+#include <esp_wifi.h>
 #include <WiFi.h>
 #include <DNSServer.h>
 #include <WiFiUdp.h>
@@ -8,7 +9,8 @@
 #include "src/parsebytes.h"
 #include "time.h"
 #include <ESPmDNS.h>
-
+#include <esp_adc_cal.h>
+#include <driver/adc.h>
 
 /* This sketch is a extension/expansion/reork of the 'official' ESP32 Camera example
  *  sketch from Expressif:
@@ -335,12 +337,17 @@ void StartCamera() {
     config.pin_reset = RESET_GPIO_NUM;
     config.xclk_freq_hz = xclk * 1000000;
     config.pixel_format = PIXFORMAT_JPEG;
-    // Low(ish) default framesize and quality
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_location = CAMERA_FB_IN_PSRAM;
-    config.fb_count = 2;
     config.grab_mode = CAMERA_GRAB_LATEST;
+    // Pre-allocate large buffers
+    if(psramFound()){
+        config.frame_size = FRAMESIZE_UXGA;
+        config.jpeg_quality = 10;
+        config.fb_count = 2;
+    } else {
+        config.frame_size = FRAMESIZE_SVGA;
+        config.jpeg_quality = 12;
+        config.fb_count = 1;
+    }
 
     #if defined(CAMERA_MODEL_ESP_EYE)
         pinMode(13, INPUT_PULLUP);
@@ -405,6 +412,8 @@ void StartCamera() {
         // set initial frame rate
         #if defined(DEFAULT_RESOLUTION)
             s->set_framesize(s, DEFAULT_RESOLUTION);
+        #else
+            s->set_framesize(s, FRAMESIZE_SVGA);
         #endif
 
         /*
@@ -443,6 +452,8 @@ void StartCamera() {
     // We now have camera with default init
 }
 
+#include "esp_wifi.h"  // Include the ESP-IDF header for access to esp_wifi_set_mac
+
 void WifiSetup() {
     // Feedback that we are now attempting to connect
     flashLED(300);
@@ -456,14 +467,35 @@ void WifiSetup() {
 
     Serial.print("Known external SSIDs: ");
     if (stationCount > firstStation) {
-        for (int i=firstStation; i < stationCount; i++) Serial.printf(" '%s'", stationList[i].ssid);
+        for (int i = firstStation; i < stationCount; i++) Serial.printf(" '%s'", stationList[i].ssid);
     } else {
         Serial.print("None");
     }
     Serial.println();
-    byte mac[6] = {0,0,0,0,0,0};
-    WiFi.macAddress(mac);
-    Serial.printf("MAC address: %02X:%02X:%02X:%02X:%02X:%02X\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+    // MAC adress shenanigans, I spent way too long coding this in
+    #if defined(CUSTOM_MAC)
+      WiFi.mode(WIFI_STA);
+      esp_err_t err = esp_wifi_set_mac(WIFI_IF_STA, mac_custom);
+      if (err == ESP_OK) {
+          Serial.printf("MAC address set to: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
+                        mac_custom[0], mac_custom[1], mac_custom[2], mac_custom[3], mac_custom[4], mac_custom[5]);
+      } else {
+          Serial.println("Failed to set custom MAC address");
+      }
+
+      byte mac[6] = {0, 0, 0, 0, 0, 0};
+      WiFi.macAddress(mac);
+      Serial.printf("CUSTOM MAC address: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
+                    mac_custom[0], mac_custom[1], mac_custom[2], mac_custom[3], mac_custom[4], mac_custom[5]);
+      Serial.printf("CURRENT MAC address: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
+                    mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+      Serial.println("if the 2 mac adresses above match, you're good");
+    #else
+      byte mac[6] = {0,0,0,0,0,0};
+      WiFi.macAddress(mac);
+      Serial.printf("MAC address: %02X:%02X:%02X:%02X:%02X:%02X\r\n", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    #endif
 
     int bestStation = -1;
     long bestRSSI = -1024;
@@ -484,7 +516,7 @@ void WifiSetup() {
                 // Scan our list of known external stations
                 for (int sta = firstStation; sta < stationCount; sta++) {
                     if ((strcmp(stationList[sta].ssid, thisSSID.c_str()) == 0) ||
-                    (strcmp(stationList[sta].ssid, thisBSSID.c_str()) == 0)) {
+                        (strcmp(stationList[sta].ssid, thisBSSID.c_str()) == 0)) {
                         Serial.print("  -  Known!");
                         // Chose the strongest RSSI seen
                         if (thisRSSI > bestRSSI) {
@@ -504,7 +536,7 @@ void WifiSetup() {
         accesspoint = true;
     }
 
-    if (bestStation == -1) {
+        if (bestStation == -1) {
         if (!accesspoint) {
             #if defined(WIFI_AP_ENABLE)
                 Serial.println("No known networks found, entering AccessPoint fallback mode");
@@ -628,6 +660,7 @@ void WifiSetup() {
     }
 }
 
+
 void setup() {
     Serial.begin(115200);
     Serial.setDebugOutput(true);
@@ -723,6 +756,8 @@ void setup() {
             })
             .onEnd([]() {
                 Serial.println("\r\nEnd");
+                delay(100);
+                ESP.restart();  // Reboot the ESP32 after OTA update
             })
             .onProgress([](unsigned int progress, unsigned int total) {
                 Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
