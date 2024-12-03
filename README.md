@@ -49,6 +49,8 @@ https://randomnerdtutorials.com/esp32-cam-troubleshooting-guide/
 
 ### Known Issues
 
+Cannot compile with the arduino ide? you need esp board from espressif at version 2.0.17, not the newest one (I tried to fix it to work with the newest version but it's too big of a headache for me).
+
 Builds made with PlatformIO are currently (v4.0) broken; the stream will die shortly after starting. See https://github.com/easytarget/esp32-cam-webserver/issues/218 for more info.
 
 The ESP32 itself is susceptible to the usual list of WiFi problems, not helped by having small antennas, older designs, congested airwaves and demanding users. The majority of disconnects, stutters and other comms problems are simply due to 'WiFi issues'. The AI-THINKER camera module & esp32 combination is quite susceptible to power supply problems affecting both WiFi conctivity and Video quality; short cabling and decent power supplies are your friend here; also well cooled cases and, if you have the time, decoupling capacitors on the power lines.
