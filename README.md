@@ -51,7 +51,7 @@ https://randomnerdtutorials.com/esp32-cam-troubleshooting-guide/
 
 ### Known Issues
 
-Cannot compile with the arduino ide? you need esp board from espressif at version 2.0.17, not the newest one (I tried to fix it to work with the newest version but it's too big of a headache for me).
+Cannot compile with the arduino ide? you need esp board code from espressif at version 2.0.17, not the newest one (I tried to fix it to work with the newest version but it's too big of a headache for me).
 
 Builds made with PlatformIO are currently (v4.0) broken; the stream will die shortly after starting. See https://github.com/easytarget/esp32-cam-webserver/issues/218 for more info.
 
