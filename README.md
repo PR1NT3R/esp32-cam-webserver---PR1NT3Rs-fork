@@ -113,9 +113,12 @@ Go to the URL given in the serial output, the web UI should appear with the sett
 
 ## My Modifications:
 
+Mine:
+
 Custom MAC adress configuration (optional), added this because I have plans for this to be configured for my HA so it needs a stable ip adress in my DHCP config and for that I need a static MAC adress.
 <br /><br /><br />
 
+Original Creator's:
 
 ![The simplified viewer](Docs/simpleviewer.png)<br>*The new default Simple view, just the basics*
 
